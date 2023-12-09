@@ -4,10 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ECommerce.Domain.Entities
+namespace ECommerce.Application.Abstraction.Storage.Local
 {
-    public class ProductImageFile : File
+    public interface ILocalStorage : IStorage
     {
-        public ICollection<Product> Products { get; set; }
     }
 }

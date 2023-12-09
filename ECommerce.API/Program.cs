@@ -1,5 +1,7 @@
 using ECommerce.Infastructure;
 using ECommerce.Infastructure.Filters;
+using ECommerce.Infastructure.Services.Storage.Azure;
+using ECommerce.Infastructure.Services.Storage.Local;
 using ECommerce.Persistance;
 using ECommerce.Persistance.Contexts;
 using FluentValidation.AspNetCore;
@@ -13,11 +15,16 @@ namespace ECommerce.API
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            builder.Services.AddInfrastructureServices();
+
+            //Generic Servis tanýmlama
+            //builder.Services.AddStorage<LocalStorage>();
+            builder.Services.AddStorage<AzureStorage>();
 
             builder.Services.AddDbContext<ECommerceAPIDbContext>(Options => Options.UseNpgsql(builder.Configuration.GetConnectionString("PostgreSQL")));
 
+            //Servis tanýmlama
             builder.Services.AddPersistenceServices();
+            builder.Services.AddInfrastructureServices();
 
             builder.Services.AddCors(options => options.AddDefaultPolicy(policy =>
             //policy.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin();
@@ -29,13 +36,11 @@ namespace ECommerce.API
             //.AddFluentValidation(configuration=> configuration.RegisterValidatorsFromAssemblyContaining<CreateProductValidation>()).ConFiureApiBehaviorOptions(options => options.SuppressModelStateInvalidFilter = true);
 
 
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();

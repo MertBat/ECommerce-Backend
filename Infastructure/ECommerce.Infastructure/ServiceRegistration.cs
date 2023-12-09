@@ -1,11 +1,6 @@
-﻿using ECommerce.Application.Services;
-using ECommerce.Infastructure.Services;
+﻿using ECommerce.Application.Abstraction.Storage;
+using ECommerce.Infastructure.Services.Storage;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ECommerce.Infastructure
 {
@@ -13,7 +8,23 @@ namespace ECommerce.Infastructure
     {
         public static void AddInfrastructureServices(this IServiceCollection serviceCollection)
         {
-            serviceCollection.AddScoped<IFileService, FileService>();
+            serviceCollection.AddScoped<IStorageService, StorageService>();
         }
+
+        public static void AddStorage<T>(this IServiceCollection serviceCollection) where T : Storage, IStorage
+        {
+            serviceCollection.AddScoped<IStorage, T>();
+        }
+
+        //Bu şekilde de dinamik bir yapı kurulabilinir.
+        //public static void AddStorage>(this IServiceCollection serviceCollection, StorageType storageType) 
+        //{
+        //    serviceCollection.AddScoped<IStorage, T>();
+        //}
     }
+
+        //public enum StorageType
+        //{
+        //    Local, Azure, AWS
+        //}
 }
