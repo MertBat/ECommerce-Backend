@@ -1,19 +1,17 @@
-﻿using ECommerce.Domain.Entities.Common;
+﻿using MediatR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ECommerce.Domain.Entities
+namespace ECommerce.Application.Features.Commands.Product.UpdateProduct
 {
-    public class Product : BaseEntity
+    public class UpdateProductCommandRequest : IRequest<UpdateProductCommandResponse>
     {
+        public string Id { get; set; }
         public string Name { get; set; }
         public int Stock { get; set; }
         public long Price { get; set; }
-
-        public ICollection<Order> Orders { get; set; }
-        public ICollection<ProductImageFile> ProductImageFiles { get; set; }
     }
 }

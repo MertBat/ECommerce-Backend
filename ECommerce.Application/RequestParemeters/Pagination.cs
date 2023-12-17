@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ECommerce.Application.RequestParemeters
 {
-    public record Pegination
+    public record Pagination
     {
         public int Page { get; set; } = 0;
         public int Size { get; set; } = 5;
