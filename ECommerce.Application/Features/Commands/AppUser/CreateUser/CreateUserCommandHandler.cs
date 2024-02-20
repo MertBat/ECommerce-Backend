@@ -1,45 +1,33 @@
-﻿using MediatR;
+﻿using ECommerce.Application.Abstraction.Services;
+using ECommerce.Application.DTOs;
+using MediatR;
 using Microsoft.AspNetCore.Identity;
 
 namespace ECommerce.Application.Features.Commands.AppUser.CreateUser
 {
     public class CreateUserCommandHandler : IRequestHandler<CreateUserCommandRequest, CreateUserCommandResponse>
     {
-        private readonly UserManager<Domain.Entities.Identity.AppUser> _userManager;
+        private readonly IUserService _userService;
 
-        public CreateUserCommandHandler(UserManager<Domain.Entities.Identity.AppUser> userManager)
+        public CreateUserCommandHandler(IUserService userService )
         {
-            _userManager = userManager;
+            _userService = userService;
         }
         public async Task<CreateUserCommandResponse> Handle(CreateUserCommandRequest request, CancellationToken cancellationToken)
         {
-            IdentityResult result = await _userManager.CreateAsync(new()
+            CreateUserResponseDTO response = await _userService.CreateAsync(new()
             {
-                Id= Guid.NewGuid().ToString(),
+                EMail = request.EMail,
+                Name = request.Name,
+                Password = request.Password,
+                PasswordAgain = request.PasswordAgain,
                 UserName = request.UserName,
-                Email = request.EMail,
-                NameSurname = request.Name,
+            });
 
-            }, request.Password);
-
-            CreateUserCommandResponse response = new CreateUserCommandResponse() { Succeeded = result.Succeeded};
-
-            if(result.Succeeded)
-            {
-                response.Succeeded = true;
-                response.Message = "User successfuly created";
-            }
-            else
-            {
-                response.Succeeded = false;
-                foreach (var error in result.Errors)
-                {
-                    response.Message += $"{error.Code} - {error.Description}<br>";
-                }
-                response.Message = "User successfuly created";
-            }
-
-            return response;
+            return new() { 
+                Message = response.Message,
+                Succeeded = response.Succeeded,
+            };
         }
     }
 }

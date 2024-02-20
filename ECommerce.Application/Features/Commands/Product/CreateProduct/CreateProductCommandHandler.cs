@@ -23,10 +23,9 @@ namespace ECommerce.Application.Features.Commands.Product.CreateProduct
             await _productWriteRepository.AddAsync(new()
             {
                 Name = request.Name,
-                Price = request.Price,
-                Stock = request.Stock,
+                Price = Convert.ToInt64(request.Price),
+                Stock = request.Stock
             });
-
             await _productWriteRepository.saveAsync();
             return new();
         }

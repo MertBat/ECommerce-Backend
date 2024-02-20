@@ -1,5 +1,4 @@
-﻿using ECommerce.Application.Abstraction.Storage;
-using ECommerce.Application.Features.Commands.Product.CreateProduct;
+﻿using ECommerce.Application.Features.Commands.Product.CreateProduct;
 using ECommerce.Application.Features.Commands.Product.DeleteProduct;
 using ECommerce.Application.Features.Commands.Product.UpdateProduct;
 using ECommerce.Application.Features.Commands.ProductImageFile.DeleteProductImage;
@@ -7,22 +6,16 @@ using ECommerce.Application.Features.Commands.ProductImageFile.UploadProductImag
 using ECommerce.Application.Features.Queries.Product.GetAllProduct;
 using ECommerce.Application.Features.Queries.Product.GetByIdProduct;
 using ECommerce.Application.Features.Queries.ProductImageFile.GetProductImage;
-using ECommerce.Application.Repositories;
-using ECommerce.Application.Repositories.File;
-using ECommerce.Application.Repositories.InvoiceFile;
-using ECommerce.Application.Repositories.ProductImageFile;
-using ECommerce.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System.Net;
 
 namespace ECommerce.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(AuthenticationSchemes ="Admin")]
+    [Authorize(AuthenticationSchemes = "Admin")]
     public class ProductsController : ControllerBase
     {
 
@@ -55,10 +48,12 @@ namespace ECommerce.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post(CreateProductCommandRequest createProductCommandRequest)
+         public async Task<IActionResult> Post(CreateProductCommandRequest createProductCommandRequest)
         {
             CreateProductCommandResponse response = await _mediator.Send(createProductCommandRequest);
             return StatusCode((int)HttpStatusCode.Created);
+
+
         }
 
         [HttpDelete("{Id}")]

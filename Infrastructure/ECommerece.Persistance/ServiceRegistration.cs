@@ -8,6 +8,9 @@ using ECommerce.Persistance.Repositories.ProductImageFile;
 using ECommerce.Application.Repositories.ProductImageFile;
 using ECommerce.Persistance.Repositories.File;
 using ECommerce.Application.Repositories.File;
+using ECommerce.Application.Abstraction.Services;
+using ECommerce.Persistance.Services;
+using ECommerce.Application.Abstraction.Services.Authentications;
 
 namespace ECommerce.Persistance
 {
@@ -27,6 +30,12 @@ namespace ECommerce.Persistance
             services.AddScoped<IProductImageFileWriteRepository, ProductImageFileWriteRepository>();
             services.AddScoped<IFileReadRepository, FileReadRepository>();
             services.AddScoped<IFileWriteRepository, FileWriteRepository>();
+
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IExternalAuthentication, AuthService>();
+            services.AddScoped<IInternalAuthentication, AuthService>();
+
         }
     }
 }

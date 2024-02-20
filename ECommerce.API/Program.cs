@@ -9,6 +9,14 @@ using ECommerce.Domain.Entities.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using ECommerce.Infastructure.Services.Storage.Local;
+using Serilog;
+using Serilog.Core;
+using Serilog.Sinks.PostgreSQL;
+using System.Security.Claims;
+using Serilog.Context;
+using ECommerce.API.Configurations.ColumnWriters;
+using Microsoft.AspNetCore.HttpLogging;
 
 namespace ECommerce.API
 {
@@ -20,8 +28,8 @@ namespace ECommerce.API
 
 
             //Generic Servis tanýmlama
-            //builder.Services.AddStorage<LocalStorage>();
-            builder.Services.AddStorage<AzureStorage>();
+            builder.Services.AddStorage<LocalStorage>();
+            //builder.Services.AddStorage<AzureStorage>();
 
             builder.Services.AddDbContext<ECommerceAPIDbContext>(Options => Options.UseNpgsql(builder.Configuration.GetConnectionString("PostgreSQL")));
 
@@ -35,6 +43,36 @@ namespace ECommerce.API
                 options.Password.RequireUppercase = false;
             }).AddEntityFrameworkStores<ECommerceAPIDbContext>();
 
+            //SerieLog
+            Logger log = new LoggerConfiguration()
+                .WriteTo.Console()
+                .WriteTo.File("logs/log.txt")
+                .WriteTo.PostgreSQL(builder.Configuration.GetConnectionString("PostgreSQL"), "logs", needAutoCreateTable: true,
+                columnOptions: new Dictionary<string, ColumnWriterBase> //Eðer custom property yazýlmak istenmiyorsa bunu yazmaya gerek yok
+                {
+                    {"message", new RenderedMessageColumnWriter()},
+                    {"message_template", new MessageTemplateColumnWriter()},
+                    {"level", new LevelColumnWriter()},
+                    {"time_stamp", new TimestampColumnWriter()},
+                    {"exception", new ExceptionColumnWriter()},
+                    {"log_event", new LogEventSerializedColumnWriter()},
+                    {"user_name", new UsernameColumnWriter() } //custom property
+                })
+                .WriteTo.Seq(builder.Configuration["Seq:SeqUrl"]) //loglara görsel arayüz kurup ordan bakmak için seq kullanabiliriz bunun için => PowerShell e docker run --name Seq -e ACCEPT_EULA=Y -p 5432:80 datalust/seq:latest
+                .Enrich.FromLogContext() //harici property kullanýlmak istenildiðinde kullanýlýr.
+                .MinimumLevel.Information()
+                .CreateLogger();
+            builder.Host.UseSerilog(log);
+
+            builder.Services.AddHttpLogging(logging => //Yapýlan requestler de log mekanizmasý sayesinde yakalanmasýný istiyorum.
+            {
+                logging.LoggingFields = HttpLoggingFields.All;
+                logging.RequestHeaders.Add("sec_ch_ua"); //Kullanýcaya dair bütün bilgileri getirecek key
+                logging.MediaTypeOptions.AddText("application/javascript");
+                logging.RequestBodyLogLimit = 4096; // Taþýnacak veri limitleri
+                logging.ResponseBodyLogLimit = 4096;// Taþýnacak veri limitleri
+            });
+
             //JWT Token
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer("Admin", options =>
             {
@@ -47,7 +85,9 @@ namespace ECommerce.API
 
                     ValidAudience = builder.Configuration["Token:Audience"],
                     ValidIssuer = builder.Configuration["Token:Issuer"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Token:SecurityKey"]))
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Token:SecurityKey"])),
+                    LifetimeValidator = (notBefore, expires, securityToken, validationParameters)=> expires != null ? expires > DateTime.UtcNow : false,
+                    NameClaimType = ClaimTypes.Name // user.Identity.Name ile elde edilir.
                 };
             });
 
@@ -76,6 +116,10 @@ namespace ECommerce.API
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+
+            app.UseSerilogRequestLogging(); // Bunu yazdýktan öncekiler loglanmayacak, sonrakiler loglanacak
+            app.UseHttpLogging();
+
             app.UseCors();
 
             app.UseStaticFiles();
@@ -85,6 +129,12 @@ namespace ECommerce.API
             app.UseAuthentication();
             app.UseAuthorization();
 
+            app.Use(async (context, next) =>
+            {
+                var username = context.User?.Identity?.IsAuthenticated != null || true ? context.User.Identity.Name : null;
+                LogContext.PushProperty("user_name", username);
+                await next();
+            });
 
             app.MapControllers();
 
