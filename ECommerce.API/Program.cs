@@ -17,6 +17,7 @@ using System.Security.Claims;
 using Serilog.Context;
 using ECommerce.API.Configurations.ColumnWriters;
 using Microsoft.AspNetCore.HttpLogging;
+using ECommerce.API.Extensions;
 
 namespace ECommerce.API
 {
@@ -117,6 +118,7 @@ namespace ECommerce.API
                 app.UseSwaggerUI();
             }
 
+            app.ConfigureExceptionHandler<Program>(app.Services.GetRequiredService<ILogger<Program>>());
             app.UseSerilogRequestLogging(); // Bunu yazdýktan öncekiler loglanmayacak, sonrakiler loglanacak
             app.UseHttpLogging();
 
