@@ -1,11 +1,6 @@
 ﻿using ECommerce.Application.Repositories;
 using MediatR;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace ECommerce.Application.Features.Commands.Product.CreateProduct
 {

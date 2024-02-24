@@ -1,4 +1,5 @@
-﻿using ECommerce.Application.Repositories;
+﻿using ECommerce.Application.Abstraction.Hubs;
+using ECommerce.Application.Repositories;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using System;
@@ -13,11 +14,13 @@ namespace ECommerce.Application.Features.Queries.Product.GetAllProduct
     {
         private readonly IProductReadRepository _productReadRepository;
         private readonly ILogger<GetAllProductQueryHandler> _logger;
+        private readonly IProductHubService _productHubService;
 
-        public GetAllProductQueryHandler(IProductReadRepository productReadRepository, ILogger<GetAllProductQueryHandler> logger)
+        public GetAllProductQueryHandler(IProductReadRepository productReadRepository, ILogger<GetAllProductQueryHandler> logger, IProductHubService productHubService)
         {
             _productReadRepository = productReadRepository;
             _logger = logger;
+            _productHubService = productHubService;
             _logger = logger;
         }
 
@@ -34,6 +37,7 @@ namespace ECommerce.Application.Features.Queries.Product.GetAllProduct
                 p.UpdatedDate
             }).ToList();
             _logger.LogInformation("All products");
+            await _productHubService.ProductAddedMessageAsync($"Ürünler getirilmiştir.");
             return new() 
             { 
                 Products = products, 

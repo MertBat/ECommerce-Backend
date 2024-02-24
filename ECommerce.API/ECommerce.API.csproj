@@ -23,6 +23,7 @@
   <ItemGroup>
     <ProjectReference Include="..\ECommerce.Application\ECommerce.Application.csproj" />
     <ProjectReference Include="..\Infastructure\ECommerce.Infastructure\ECommerce.Infastructure.csproj" />
+    <ProjectReference Include="..\Infrastructure\ECommerce.SignalR\ECommerce.SignalR.csproj" />
     <ProjectReference Include="..\Infrastructure\ECommerece.Persistance\ECommerce.Persistance.csproj" />
   </ItemGroup>
 

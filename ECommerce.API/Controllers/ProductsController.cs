@@ -10,6 +10,8 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using System.Threading.Tasks; 
+using System.Threading;
 
 namespace ECommerce.API.Controllers
 {
@@ -52,8 +54,6 @@ namespace ECommerce.API.Controllers
         {
             CreateProductCommandResponse response = await _mediator.Send(createProductCommandRequest);
             return StatusCode((int)HttpStatusCode.Created);
-
-
         }
 
         [HttpDelete("{Id}")]

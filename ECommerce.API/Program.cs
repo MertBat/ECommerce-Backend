@@ -18,6 +18,8 @@ using Serilog.Context;
 using ECommerce.API.Configurations.ColumnWriters;
 using Microsoft.AspNetCore.HttpLogging;
 using ECommerce.API.Extensions;
+using ECommerce.SignalR;
+using ECommerce.SignalR.Hubs;
 
 namespace ECommerce.API
 {
@@ -96,10 +98,11 @@ namespace ECommerce.API
             builder.Services.AddPersistenceServices();
             builder.Services.AddInfrastructureServices();
             builder.Services.AddApplicationServices();
+            builder.Services.AddSignalRServices();
 
             builder.Services.AddCors(options => options.AddDefaultPolicy(policy =>
             //policy.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin();
-             policy.WithOrigins("http://localhost:4200", "https://localhost:4200").AllowAnyHeader().AllowAnyMethod()
+             policy.WithOrigins("http://localhost:4200", "https://localhost:4200").AllowAnyHeader().AllowAnyMethod().AllowCredentials()
             ));
 
             //Validations
@@ -139,6 +142,8 @@ namespace ECommerce.API
             });
 
             app.MapControllers();
+
+            app.Hubs();
 
             app.Run();
         }
