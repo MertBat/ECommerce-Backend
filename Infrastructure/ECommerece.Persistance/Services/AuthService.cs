@@ -4,7 +4,6 @@ using ECommerce.Application.DTOs;
 using ECommerce.Application.Exceptions;
 using ECommerce.Application.Features.Commands.AppUser.LoginUser;
 using ECommerce.Domain.Entities.Identity;
-using ECommerce.Persistance.Migrations;
 using Google.Apis.Auth;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
@@ -128,7 +127,7 @@ namespace ECommerce.Persistance.Services
 
             if(user != null && user?.RefreshTokenEndDate > DateTime.UtcNow)
             {
-                TokenDTO token = _tokenHandler.CreateAccessToken(500, user);
+                TokenDTO token = _tokenHandler.CreateAccessToken(900, user);
 
                 await _userService.UpdateRefreshToken(token.RefreshToken, user, token.Expiration, 500);
                 return token;

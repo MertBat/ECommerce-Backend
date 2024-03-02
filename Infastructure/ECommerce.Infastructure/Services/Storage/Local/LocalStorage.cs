@@ -26,7 +26,7 @@ namespace ECommerce.Infastructure.Services.Storage.Local
 
         public bool HasFile(string path, string fileName)
         {
-            return File.Exists($"{path}\\{fileName}");
+            return File.Exists(path + "\\" + fileName);
         }
 
         private async Task<bool> CopyFileAsync(string path, IFormFile file)

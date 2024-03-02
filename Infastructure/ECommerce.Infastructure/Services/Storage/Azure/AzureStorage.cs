@@ -19,28 +19,28 @@ namespace ECommerce.Infastructure.Services.Storage.Azure
             _blobServiceClient = new(configuration["Storage:Azure"]);
         }
 
-        public async Task DeleteAsync(string contrainer, string fileName)
+        public async Task DeleteAsync(string container, string fileName)
         {
-            _blobContainerClient = _blobServiceClient.GetBlobContainerClient(contrainer);
+            _blobContainerClient = _blobServiceClient.GetBlobContainerClient(container);
             BlobClient blob = _blobContainerClient.GetBlobClient(fileName);
             await blob.DeleteAsync();
         }
 
-        public List<string> GetFiles(string contrainer)
+        public List<string> GetFiles(string container)
         {
-            _blobContainerClient = _blobServiceClient.GetBlobContainerClient(contrainer);
+            _blobContainerClient = _blobServiceClient.GetBlobContainerClient(container);
             return _blobContainerClient.GetBlobs().Select(x => x.Name).ToList();
         }
 
-        public bool HasFile(string contrainer, string fileName)
+        public bool HasFile(string container, string fileName)
         {
-            _blobContainerClient = _blobServiceClient.GetBlobContainerClient(contrainer);
+            _blobContainerClient = _blobServiceClient.GetBlobContainerClient(container);
             return _blobContainerClient.GetBlobs().Any(x => x.Name == fileName);
         }
 
-        public async Task<List<(string fileName, string pathOrContrainer)>> uploadAsync(string contrainer, IFormFileCollection files)
+        public async Task<List<(string fileName, string pathOrContrainer)>> uploadAsync(string container, IFormFileCollection files)
         {
-            _blobContainerClient = _blobServiceClient.GetBlobContainerClient(contrainer);
+            _blobContainerClient = _blobServiceClient.GetBlobContainerClient(container);
             await _blobContainerClient.CreateIfNotExistsAsync();
             //await _blobContainerClient.SetAccessPolicyAsync(PublicAccessType.BlobContainer);
 
@@ -50,7 +50,7 @@ namespace ECommerce.Infastructure.Services.Storage.Azure
                 string newFileName = FileRename(file.Name);
                 BlobClient blobClient = _blobContainerClient.GetBlobClient(newFileName);
                 await blobClient.UploadAsync(file.OpenReadStream());
-                datas.Add((newFileName, $"{contrainer}/{newFileName}"));
+                datas.Add((newFileName, $"{container}/{newFileName}"));
             }
 
             return datas;

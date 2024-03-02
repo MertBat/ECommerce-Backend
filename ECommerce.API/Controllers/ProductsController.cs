@@ -12,12 +12,12 @@ using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using System.Threading.Tasks; 
 using System.Threading;
+using ECommerce.Application.Features.Commands.ProductImageFile.ChangeShowcaseImage;
 
 namespace ECommerce.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(AuthenticationSchemes = "Admin")]
     public class ProductsController : ControllerBase
     {
 
@@ -43,6 +43,7 @@ namespace ECommerce.API.Controllers
         }
 
         [HttpPut]
+        [Authorize(AuthenticationSchemes = "Admin")]
         public async Task<IActionResult> Put([FromBody] UpdateProductCommandRequest updateProductCommandRequest)
         {
             await _mediator.Send(updateProductCommandRequest);
@@ -50,13 +51,15 @@ namespace ECommerce.API.Controllers
         }
 
         [HttpPost]
-         public async Task<IActionResult> Post(CreateProductCommandRequest createProductCommandRequest)
+        [Authorize(AuthenticationSchemes = "Admin")]
+        public async Task<IActionResult> Post(CreateProductCommandRequest createProductCommandRequest)
         {
             CreateProductCommandResponse response = await _mediator.Send(createProductCommandRequest);
             return StatusCode((int)HttpStatusCode.Created);
         }
 
         [HttpDelete("{Id}")]
+        [Authorize(AuthenticationSchemes = "Admin")]
         public async Task<IActionResult> Delete([FromRoute] DeleteProductCommandRequest deleteProductCommandRequest)
         {
             await _mediator.Send(deleteProductCommandRequest);
@@ -64,6 +67,7 @@ namespace ECommerce.API.Controllers
         }
 
         [HttpPost("[action]")]
+        [Authorize(AuthenticationSchemes = "Admin")]
         public async Task<IActionResult> Upload([FromQuery] UploadProductImageCommandRequest uploadProductImageCommandRequest)
         {
             uploadProductImageCommandRequest.FormCollection = Request.Form.Files;
@@ -80,11 +84,20 @@ namespace ECommerce.API.Controllers
         }
 
         [HttpDelete("[action]/{Id}")]
+        [Authorize(AuthenticationSchemes = "Admin")]
         public async Task<IActionResult> DeleteProductImage([FromRoute] DeleteProductImageCommandRequest deleteProductImageCommandRequest, [FromQuery] string imageId)
         {
             deleteProductImageCommandRequest.ImageId = imageId;
             await _mediator.Send(deleteProductImageCommandRequest);
             return Ok();
+        }
+
+        [HttpGet("[action]")]
+        [Authorize(AuthenticationSchemes = "Admin")]
+        public async Task<IActionResult> changeShowcase([FromQuery]ChangeShowcaseImageCommandRequest changeShowcaseImageCommandRequest)
+        {
+            ChangeShowcaseImageCommandResponse response = await _mediator.Send(changeShowcaseImageCommandRequest);
+            return Ok(response);
         }
     }
 }

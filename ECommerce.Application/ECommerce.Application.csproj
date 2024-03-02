@@ -19,9 +19,4 @@
     <ProjectReference Include="..\Core\ECommerce.Domain\ECommerce.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Services\" />
-    <Folder Include="Validators\" />
-  </ItemGroup>
-
 </Project>

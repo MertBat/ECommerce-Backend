@@ -20,6 +20,13 @@ using Microsoft.AspNetCore.HttpLogging;
 using ECommerce.API.Extensions;
 using ECommerce.SignalR;
 using ECommerce.SignalR.Hubs;
+using Amazon.S3;
+using Amazon.Extensions.NETCore.Setup;
+using Amazon.Runtime;
+using Microsoft.Extensions.Configuration;
+using ECommerce.Infastructure.Services.Storage;
+using Amazon;
+using ECommerce.Infastructure.Services.Storage.AWS;
 
 namespace ECommerce.API
 {
@@ -30,11 +37,26 @@ namespace ECommerce.API
             var builder = WebApplication.CreateBuilder(args);
 
 
-            //Generic Servis tanýmlama
-            builder.Services.AddStorage<LocalStorage>();
+            //Generic store Servis tanýmlama
+            //builder.Services.AddStorage<LocalStorage>();
             //builder.Services.AddStorage<AzureStorage>();
+            builder.Services.AddStorage<AWSStorage>();
 
+            //Database
             builder.Services.AddDbContext<ECommerceAPIDbContext>(Options => Options.UseNpgsql(builder.Configuration.GetConnectionString("PostgreSQL")));
+
+            //AWS (configure aws s3 client)
+            var awsSettings = builder.Configuration.GetSection("Storage:AWS");
+            var credential = new BasicAWSCredentials(awsSettings["AWSAccessKey"], awsSettings["AWSSecretAccessKey"]);
+
+            //AWS (configure aws options)
+            var awsOptions = builder.Configuration.GetAWSOptions();
+            awsOptions.Credentials = credential;
+            awsOptions.Region = RegionEndpoint.EUCentral1;
+            builder.Services.AddDefaultAWSOptions(awsOptions);
+
+            //AWS S3 servisi
+            builder.Services.AddAWSService<IAmazonS3>();
 
             //Identity
             builder.Services.AddIdentity<AppUser, AppRole>(options => 
@@ -95,6 +117,7 @@ namespace ECommerce.API
             });
 
             //Services
+            builder.Services.AddHttpContextAccessor(); //Client dan gelen request neticesinde oluþturulan HttpContext nesnesine katmanlardaki classlar üzerinden eriþebilmemizi saðlayan servistir.
             builder.Services.AddPersistenceServices();
             builder.Services.AddInfrastructureServices();
             builder.Services.AddApplicationServices();

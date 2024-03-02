@@ -11,6 +11,10 @@ using ECommerce.Application.Repositories.File;
 using ECommerce.Application.Abstraction.Services;
 using ECommerce.Persistance.Services;
 using ECommerce.Application.Abstraction.Services.Authentications;
+using ECommerce.Application.Repositories.BasketItem;
+using ECommerce.Persistance.Repositories.BasketItem;
+using ECommerce.Application.Repositories.Basket;
+using ECommerce.Persistance.Repositories.Basket;
 
 namespace ECommerce.Persistance
 {
@@ -30,11 +34,16 @@ namespace ECommerce.Persistance
             services.AddScoped<IProductImageFileWriteRepository, ProductImageFileWriteRepository>();
             services.AddScoped<IFileReadRepository, FileReadRepository>();
             services.AddScoped<IFileWriteRepository, FileWriteRepository>();
+            services.AddScoped<IBasketReadRepository, BasketReadRepository>();
+            services.AddScoped<IBasketWriteRepository, BasketWriteRepository>();
+            services.AddScoped<IBasketItemReadRespository, BasketItemReadRepository>();
+            services.AddScoped<IBasketItemWriteRepository, BasketItemWriteRepository>();
 
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IExternalAuthentication, AuthService>();
             services.AddScoped<IInternalAuthentication, AuthService>();
+            services.AddScoped<IBasketService, BasketService>();
 
         }
     }
