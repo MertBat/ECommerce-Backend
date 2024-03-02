@@ -361,3 +361,7 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+/wwwroot/photo-images/
+/ECommerce.API/wwwroot/photo-images
+/ECommerce.API/appsettings.json
