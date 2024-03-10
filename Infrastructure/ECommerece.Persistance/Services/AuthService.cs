@@ -129,7 +129,7 @@ namespace ECommerce.Persistance.Services
             {
                 TokenDTO token = _tokenHandler.CreateAccessToken(900, user);
 
-                await _userService.UpdateRefreshToken(token.RefreshToken, user, token.Expiration, 500);
+                await _userService.UpdateRefreshToken(token.RefreshToken, user, token.Expiration, 1300);
                 return token;
             }
             else

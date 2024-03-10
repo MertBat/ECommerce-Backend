@@ -68,6 +68,15 @@ namespace ECommerce.Persistance.Services
             return result.BasketItems.ToList();
         }
 
+        public Basket? GetUserActiveBasket
+        {
+            get
+            {
+                Basket? basket = ContextUser().Result;
+                return basket;
+            }
+        }
+
         public async Task RemoveBasketItemAsync(string basketItemId)
         {
             BasketItem basketItem = await _basketItemReadRespository.GetById(basketItemId);

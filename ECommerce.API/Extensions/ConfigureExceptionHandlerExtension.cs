@@ -25,7 +25,7 @@ namespace ECommerce.API.Extensions
                         {
                             StatusCode = context.Response.StatusCode,
                             Message = contextFature.Error.Message,
-                            Title = "Hata alındı!"
+                            Title = "Error!"
                         }));
                     }
                 });
