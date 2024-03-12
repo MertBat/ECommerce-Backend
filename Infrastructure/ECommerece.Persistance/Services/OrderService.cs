@@ -1,5 +1,5 @@
 ﻿using ECommerce.Application.Abstraction.Services;
-using ECommerce.Application.DTOs;
+using ECommerce.Application.DTOs.Order;
 using ECommerce.Application.Repositories;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -39,6 +39,7 @@ namespace ECommerce.Persistance.Services
                 .Include(o=> o.Basket).ThenInclude(b=> b.BasketItems).ThenInclude(bi=> bi.Product)
                 .Select(o=> new ListOrderDTO
                 {
+                    Id = o.Id.ToString(),
                     Address = o.Address,
                     Description = o.Description,
                     CreatedDate = o.CreatedDate,
@@ -52,6 +53,26 @@ namespace ECommerce.Persistance.Services
         public async Task<int> GetAllOrdersCountAsync()
         {
             return await _orderReadRepository.GetAll().CountAsync();
+        }
+
+        public async Task<SingleOrderDTO> GetOrderByIdAsync(string orderId)
+        {
+            var data = await _orderReadRepository.Table.Include(o=> o.Basket).ThenInclude(b=> b.BasketItems).ThenInclude(bi=> bi.Product).FirstOrDefaultAsync(o=> o.Id == Guid.Parse(orderId));
+
+            return new()
+            {
+                Id = data.Id.ToString(),
+                Address = data.Address,
+                CreatedDate = data.CreatedDate,
+                OrderCode = data.OrderCode,
+                Description = data.Description,
+                BasketItems = data.Basket.BasketItems.Select(bi => new
+                {
+                    bi.Product.Name,
+                    bi.Product.Price,
+                    bi.Quantity
+                })
+            };
         }
     }
 }

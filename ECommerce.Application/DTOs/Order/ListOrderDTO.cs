@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ECommerce.Application.DTOs
+namespace ECommerce.Application.DTOs.Order
 {
     public class ListOrderDTO
     {
+        public string Id { get; set; }
         public string OrderCode { get; set; }
         public string UserName { get; set; }
         public float TotalPrice { get; set; }

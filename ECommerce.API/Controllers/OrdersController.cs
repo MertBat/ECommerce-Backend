@@ -1,5 +1,6 @@
 ﻿using ECommerce.Application.Features.Commands.Order.CreateOrder;
 using ECommerce.Application.Features.Queries.Order.GetAllOrders;
+using ECommerce.Application.Features.Queries.Order.GetOrderById;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -31,6 +32,13 @@ namespace ECommerce.API.Controllers
         public async Task<ActionResult> GetAllOrders([FromQuery] GetAllOrdersQueryRequest getAllOrdersQueryRequest)
         {
             GetAllOrdersQueryResponse response = await _mediator.Send(getAllOrdersQueryRequest);
+            return Ok(response);
+        }
+
+        [HttpGet("{Id}")]
+        public async Task<ActionResult> GetOrderById([FromRoute] GetOrderByIdQueryRequest getOrderByIdQueryRequest)
+        {
+            GetOrderByIdQueryResponse response = await _mediator.Send(getOrderByIdQueryRequest);
             return Ok(response);
         }
     }

@@ -1,5 +1,5 @@
 ﻿using ECommerce.Application.Abstraction.Services;
-using ECommerce.Application.DTOs;
+using ECommerce.Application.DTOs.Order;
 using MediatR;
 using System;
 using System.Collections.Generic;

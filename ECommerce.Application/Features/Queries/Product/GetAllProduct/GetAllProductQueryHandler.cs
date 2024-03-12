@@ -43,6 +43,7 @@ namespace ECommerce.Application.Features.Queries.Product.GetAllProduct
                 p.UpdatedDate,
                 p.ProductImageFiles
             }).ToList();
+
             _logger.LogInformation("All products");
             await _productHubService.ProductAddedMessageAsync($"Ürünler getirilmiştir.");
 
