@@ -27,6 +27,8 @@ namespace ECommerce.Application.Features.Queries.Order.GetOrderById
                 CreatedDate = data.CreatedDate,
                 Description = data.Description,
                 OrderCode = data.OrderCode,
+                OrderStatus = data.OrderStatus,
+                Completed = data.Completed,
             };
         }
     }

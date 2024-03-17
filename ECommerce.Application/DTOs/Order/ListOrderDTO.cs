@@ -15,5 +15,7 @@ namespace ECommerce.Application.DTOs.Order
         public string Description { get; set; }
         public string Address { get; set; }
         public DateTime CreatedDate { get; set; }
+        public bool Completed { get; set; }
+        public bool OrderStatus { get; set; }
     }
 }

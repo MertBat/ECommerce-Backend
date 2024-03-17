@@ -14,5 +14,7 @@ namespace ECommerce.Application.DTOs.Order
         public object BasketItems { get; set; }
         public DateTime CreatedDate { get; set; }
         public string Id { get; set; }
+        public bool OrderStatus { get; set; }
+        public bool Completed { get; set; }
     }
 }

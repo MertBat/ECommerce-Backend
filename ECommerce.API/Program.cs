@@ -27,6 +27,7 @@ using Microsoft.Extensions.Configuration;
 using ECommerce.Infastructure.Services.Storage;
 using Amazon;
 using ECommerce.Infastructure.Services.Storage.AWS;
+using Microsoft.AspNetCore.Identity;
 
 namespace ECommerce.API
 {
@@ -66,7 +67,8 @@ namespace ECommerce.API
                 options.Password.RequireDigit = false;
                 options.Password.RequireLowercase = false;
                 options.Password.RequireUppercase = false;
-            }).AddEntityFrameworkStores<ECommerceAPIDbContext>();
+            }).AddEntityFrameworkStores<ECommerceAPIDbContext>()
+            .AddDefaultTokenProviders();
 
             //SerieLog
             Logger log = new LoggerConfiguration()

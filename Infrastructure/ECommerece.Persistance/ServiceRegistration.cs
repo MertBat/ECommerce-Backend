@@ -15,6 +15,8 @@ using ECommerce.Application.Repositories.BasketItem;
 using ECommerce.Persistance.Repositories.BasketItem;
 using ECommerce.Application.Repositories.Basket;
 using ECommerce.Persistance.Repositories.Basket;
+using ECommerce.Application.Repositories.CompletedOrder;
+using ECommerce.Persistance.Repositories.CompletedOrder;
 
 namespace ECommerce.Persistance
 {
@@ -38,6 +40,8 @@ namespace ECommerce.Persistance
             services.AddScoped<IBasketWriteRepository, BasketWriteRepository>();
             services.AddScoped<IBasketItemReadRespository, BasketItemReadRepository>();
             services.AddScoped<IBasketItemWriteRepository, BasketItemWriteRepository>();
+            services.AddScoped<ICompletedOrderReadRepository, CompletedOrderReadRepository>();
+            services.AddScoped<ICompletedOrderWriteRepository, CompletedOrderWriteRepository>();
 
             services.AddScoped<IExternalAuthentication, AuthService>();
             services.AddScoped<IInternalAuthentication, AuthService>();

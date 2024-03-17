@@ -14,5 +14,6 @@ namespace ECommerce.Application.Abstraction.Services
         Task<List<ListOrderDTO>> GetAllOrdersAsync(int page, int size);
         Task<int> GetAllOrdersCountAsync();
         Task<SingleOrderDTO> GetOrderByIdAsync(string orderId);
+        Task ComleteOrderAsync(string orderId, bool orderStatus);
     }
 }
