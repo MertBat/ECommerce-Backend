@@ -1,5 +1,7 @@
 ﻿using Amazon.Runtime.Internal.Util;
 using ECommerce.Application.Abstraction.Services;
+using ECommerce.Application.DTOs.Mail;
+using ECommerce.Domain.Entities;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
@@ -22,6 +24,50 @@ namespace ECommerce.Infastructure.Services
             _configuration = configuration;
             _logger = logger;
         }
+
+        public async Task SendCompletedOrderMailAsync(string to, string orderCode, DateTime orderDate, bool orderStatus, List<MailListProductDTO> orderList, long totalPrice)
+        {
+            string table = $@"
+<table style=""border-collapse: collapse; width: 100%;"">
+  <thead>
+    <tr>
+      <th style=""border: 1px solid #ddd; padding: 8px; background-color: #b4cafa; text-align: left;"">Product</th>
+      <th style=""border: 1px solid #ddd; padding: 8px; background-color: #b4cafa; text-align: left;"">Quantity</th>
+      <th style=""border: 1px solid #ddd; padding: 8px; background-color: #b4cafa; text-align: left;"">Price</th>
+    </tr>
+  </thead>
+  <tbody>";
+
+            int index = 0;
+            foreach (var item in orderList)
+            {
+                table += $@"
+<tr>
+  <td style=""border: 1px solid #ddd; padding: 8px; {(index % 2 == 1 ? "background-color: #f2f2f2;" : "")}"">{item.ProductName}</td>
+  <td style=""border: 1px solid #ddd; padding: 8px; {(index % 2 == 1 ? "background-color: #f2f2f2;" : "")}"">{item.Quantity}</td>
+  <td style=""border: 1px solid #ddd; padding: 8px; {(index % 2 == 1 ? "background-color: #f2f2f2;" : "")}"">{item.Price}₺</td>
+</tr>";
+                index++;
+            }
+
+
+            table += $@"
+    <tr>
+      <td style=""border: 1px solid #ddd; padding: 8px; text-align: right;"" colspan=""2"">Total price:</td>
+      <td style=""border: 1px solid #ddd; padding: 8px;"">{totalPrice}₺</td>
+    </tr>
+  </tbody>
+</table>";
+
+            string content = (orderStatus ? "Order Accepted" : "Order Denied") + $" ({orderDate})";
+            string header = "Your products are listed below;";
+            string footer = orderStatus ? "We are pleased to inform you that your products have been processed successfully. Thank you for your business." : "We regret to inform you that your products have been denied. Please contact us for further information.";
+            string mailBody = MessageFormat(content, header, table, footer);
+
+            await SendMessageAsync(to, "Order Information", mailBody);
+
+        }
+
         public async Task SendMessageAsync(string to, string subject, string body, bool isBodyHtml = true)
         {
             await SendMessageAsync(new[] { to }, subject, body, isBodyHtml);
@@ -58,8 +104,16 @@ namespace ECommerce.Infastructure.Services
 
         public async Task SendPasswordResetMessageAsync(string to, string userId, string resetToken)
         {
+            string messageLink = $"<a href='{_configuration["ClientUrl"]}update-password/{userId}/{resetToken}' style='background-color: #007bff; color: #fff; text-decoration: none; padding: 10px 20px; border-radius: 5px; display: inline-block;'>Reset Password</a>";
 
-            string mailBody = $@"<!DOCTYPE html>
+            string mailBody = MessageFormat("Password Reset", "We received a request to reset your password. To create a new password, click the button below:", messageLink, "If you didn't request this, you can ignore this email. Your password will not be changed.");
+
+            await SendMessageAsync(to, "Reset Password", mailBody);
+        }
+
+        private string MessageFormat(string messageContent, string messageHeader, string messageBody, string messageFooter)
+        {
+            return $@"<!DOCTYPE html>
     <html lang=""en"">
     <head>
     <meta charset=""UTF-8"">
@@ -76,19 +130,19 @@ namespace ECommerce.Infastructure.Services
     </tr>
     <tr>
     <td>
-    <h2 style=""margin-top: 0;"">Password Reset</h2>
+    <h2 style=""margin-top: 0;"">{messageContent}</h2>
     <p>Hello,</p>
-    <p>We received a request to reset your password. To create a new password, click the button below:</p>
+    <p>{messageHeader}</p>
     </td>
     </tr>
     <tr>
     <td align=""center"">
-    <a href=""{_configuration["ClientUrl"]}update-password/{userId}/{resetToken}"" style=""background-color: #007bff; color: #fff; text-decoration: none; padding: 10px 20px; border-radius: 5px; display: inline-block;"">Reset Password</a>
+    {messageBody}
     </td>
     </tr>
     <tr>
     <td>
-    <p>If you didn't request this, you can ignore this email. Your password will not be changed.</p>
+    <p>{messageFooter}</p>
     </td>
     </tr>
     <tr>
@@ -96,12 +150,9 @@ namespace ECommerce.Infastructure.Services
     <p>Regards,<br> The ECommerce Team</p>
     </td>
     </tr>
-    </table>
-    
+    </table> 
     </body>
     </html>";
-
-            await SendMessageAsync(to, "Reset Password", mailBody);
         }
     }
 }

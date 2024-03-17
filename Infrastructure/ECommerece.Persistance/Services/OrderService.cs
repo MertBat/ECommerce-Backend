@@ -1,4 +1,5 @@
 ﻿using ECommerce.Application.Abstraction.Services;
+using ECommerce.Application.DTOs.Mail;
 using ECommerce.Application.DTOs.Order;
 using ECommerce.Application.Repositories;
 using ECommerce.Application.Repositories.CompletedOrder;
@@ -28,19 +29,35 @@ namespace ECommerce.Persistance.Services
             _completedOrderReadRepository = completedOrderReadRepository;
         }
 
-        public async Task ComleteOrderAsync(string orderId, bool orderStatus)
+        public async Task<(bool, CompletedOrderDTO)> ComleteOrderAsync(string orderId, bool orderStatus)
         {
-            Order order = await _orderReadRepository.GetById(orderId);
+            Order? order = await _orderReadRepository.Table.Include(o => o.Basket).ThenInclude(b => b.User)
+                .Include(o => o.Basket).ThenInclude(b => b.BasketItems).ThenInclude(bi => bi.Product)
+                    .FirstOrDefaultAsync(o => o.Id == Guid.Parse(orderId));
             if (order != null)
             {
                 await _comletedWriteRepository.AddAsync(new()
                 {
                     OrderId = Guid.Parse(orderId),
                     OrderStatus = orderStatus
-                }
-                );
+                });
+
+                return (await _comletedWriteRepository.saveAsync() > 0, new()
+                {
+                    Email = order.Basket.User.Email,
+                    OrderCode = order.OrderCode,
+                    OrderDate = DateTime.Now,
+                    OrderStatus = orderStatus,
+                    TotalPrice = order.Basket.BasketItems.Sum(bi => bi.Product.Price * bi.Quantity),
+                    Products = order.Basket.BasketItems.Select(bi => new MailListProductDTO
+                    {
+                        ProductName = bi.Product.Name,
+                        Quantity = bi.Quantity,
+                        Price = bi.Product.Price,
+                    }).ToList()
+                });
             }
-            await _comletedWriteRepository.saveAsync();
+            return (false, null);
         }
 
         public async Task CreateOrderAsync(string? basketId, string address, string description)
@@ -74,7 +91,7 @@ namespace ECommerce.Persistance.Services
                            Basket = order.Basket,
                            Description = order.Description,
                            Address = order.Address,
-                           Completed = _co !=null,
+                           Completed = _co != null,
                            OrderStatus = _co != null && _co.OrderStatus
                        };
 
@@ -82,7 +99,7 @@ namespace ECommerce.Persistance.Services
             {
                 Id = o.Id.ToString(),
                 OrderCode = o.OrderCode,
-                UserName = o.OrderCode,
+                UserName = o.Basket.User.NameSurname,
                 TotalPrice = o.Basket.BasketItems.Sum(bi => bi.Product.Price * bi.Quantity),
                 Description = o.Description,
                 Address = o.Address,
@@ -99,7 +116,7 @@ namespace ECommerce.Persistance.Services
 
         public async Task<SingleOrderDTO> GetOrderByIdAsync(string orderId)
         {
-            var data = await _orderReadRepository.Table.Include(o => o.Basket).ThenInclude(b => b.BasketItems).ThenInclude(bi => bi.Product).Include(o=> o.CompletedOrder).FirstOrDefaultAsync(o => o.Id == Guid.Parse(orderId));
+            var data = await _orderReadRepository.Table.Include(o => o.Basket).ThenInclude(b => b.BasketItems).ThenInclude(bi => bi.Product).Include(o => o.CompletedOrder).FirstOrDefaultAsync(o => o.Id == Guid.Parse(orderId));
 
             return new()
             {
@@ -108,7 +125,7 @@ namespace ECommerce.Persistance.Services
                 CreatedDate = data.CreatedDate,
                 OrderCode = data.OrderCode,
                 Description = data.Description,
-                OrderStatus = data.CompletedOrder != null ? data.CompletedOrder.OrderStatus: false ,
+                OrderStatus = data.CompletedOrder != null ? data.CompletedOrder.OrderStatus : false,
                 Completed = data.CompletedOrder != null ? true : false,
                 BasketItems = data.Basket.BasketItems.Select(bi => new
                 {
