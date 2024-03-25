@@ -1,5 +1,5 @@
 ﻿using ECommerce.Application.Abstraction.Token;
-using ECommerce.Application.DTOs;
+using ECommerce.Application.DTOs.User;
 using ECommerce.Domain.Entities.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;

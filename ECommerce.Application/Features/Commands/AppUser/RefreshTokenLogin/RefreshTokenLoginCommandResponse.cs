@@ -1,4 +1,4 @@
-﻿using ECommerce.Application.DTOs;
+﻿using ECommerce.Application.DTOs.User;
 using System;
 using System.Collections.Generic;
 using System.Linq;

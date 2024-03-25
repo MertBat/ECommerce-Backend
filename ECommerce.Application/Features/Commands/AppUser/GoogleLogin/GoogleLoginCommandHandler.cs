@@ -1,5 +1,5 @@
 ﻿using ECommerce.Application.Abstraction.Services.Authentications;
-using ECommerce.Application.DTOs;
+using ECommerce.Application.DTOs.User;
 using MediatR;
 
 namespace ECommerce.Application.Features.Commands.AppUser.GoogleLogin

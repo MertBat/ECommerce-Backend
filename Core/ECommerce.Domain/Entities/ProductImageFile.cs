@@ -9,6 +9,8 @@ namespace ECommerce.Domain.Entities
     public class ProductImageFile : File
     {
         public bool Showcase { get; set; }
+
+        //Navigation
         public ICollection<Product> Products { get; set; }
     }
 }

@@ -1,4 +1,4 @@
-﻿using ECommerce.Application.DTOs;
+﻿using ECommerce.Application.DTOs.User;
 
 namespace ECommerce.Application.Abstraction.Services.Authentications
 {

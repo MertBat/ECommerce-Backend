@@ -1,5 +1,5 @@
 ﻿using ECommerce.Application.Abstraction.Services;
-using ECommerce.Application.DTOs;
+using ECommerce.Application.DTOs.User;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 

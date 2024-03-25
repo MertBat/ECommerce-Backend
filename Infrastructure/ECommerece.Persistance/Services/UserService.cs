@@ -1,5 +1,5 @@
 ﻿using ECommerce.Application.Abstraction.Services;
-using ECommerce.Application.DTOs;
+using ECommerce.Application.DTOs.User;
 using ECommerce.Application.Exceptions;
 using ECommerce.Application.Features.Commands.AppUser.CreateUser;
 using ECommerce.Application.Helpers;

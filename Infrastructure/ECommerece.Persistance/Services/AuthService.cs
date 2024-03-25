@@ -1,6 +1,6 @@
 ﻿using ECommerce.Application.Abstraction.Services;
 using ECommerce.Application.Abstraction.Token;
-using ECommerce.Application.DTOs;
+using ECommerce.Application.DTOs.User;
 using ECommerce.Application.Exceptions;
 using ECommerce.Application.Features.Commands.AppUser.LoginUser;
 using ECommerce.Application.Helpers;

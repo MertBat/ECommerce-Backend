@@ -14,6 +14,8 @@ namespace ECommerce.Domain.Entities
         public string OrderCode { get; set; }
         //public Guid CustomerId { get; set; }
         //public Customer Customer { get; set; }
+
+        //Navigation
         public Basket Basket { get; set; }
         //public ICollection<Product> Products { get; set; }
         public CompletedOrder CompletedOrder { get; set; }

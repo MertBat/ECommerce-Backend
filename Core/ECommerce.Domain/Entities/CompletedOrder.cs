@@ -10,6 +10,8 @@ namespace ECommerce.Domain.Entities
     public class CompletedOrder : BaseEntity
     {
         public bool OrderStatus { get; set; }
+
+        //Navigation
         public Guid OrderId { get; set; }
         public Order Order { get; set; }
     }

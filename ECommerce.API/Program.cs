@@ -60,7 +60,7 @@ namespace ECommerce.API
             builder.Services.AddAWSService<IAmazonS3>();
 
             //Identity
-            builder.Services.AddIdentity<AppUser, AppRole>(options => 
+            builder.Services.AddIdentity<AppUser, AppRole>(options =>
             {
                 options.Password.RequiredLength = 3;
                 options.Password.RequireNonAlphanumeric = false;
@@ -113,7 +113,7 @@ namespace ECommerce.API
                     ValidAudience = builder.Configuration["Token:Audience"],
                     ValidIssuer = builder.Configuration["Token:Issuer"],
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Token:SecurityKey"])),
-                    LifetimeValidator = (notBefore, expires, securityToken, validationParameters)=> expires != null ? expires > DateTime.UtcNow : false,
+                    LifetimeValidator = (notBefore, expires, securityToken, validationParameters) => expires != null ? expires > DateTime.UtcNow : false,
                     NameClaimType = ClaimTypes.Name // user.Identity.Name ile elde edilir.
                 };
             });
@@ -132,7 +132,7 @@ namespace ECommerce.API
 
             //Validations
             builder.Services.AddControllers(options => options.Filters.Add<ValidationFilter>());
-                //.AddFluentValidation(configuration => configuration.RegisterValidatorsFromAssemblyContaining<CreateProductValidation>()).ConFiureApiBehaviorOptions(options => options.SuppressModelStateInvalidFilter = true);
+            //.AddFluentValidation(configuration => configuration.RegisterValidatorsFromAssemblyContaining<CreateProductValidation>()).ConFiureApiBehaviorOptions(options => options.SuppressModelStateInvalidFilter = true);
 
 
             builder.Services.AddEndpointsApiExplorer();
@@ -161,8 +161,15 @@ namespace ECommerce.API
 
             app.Use(async (context, next) =>
             {
-                var username = context.User?.Identity?.IsAuthenticated != null || true ? context.User.Identity.Name : null;
-                LogContext.PushProperty("user_name", username);
+                if (context.User.Identity.IsAuthenticated)
+                {
+                    var username = context.User.Identity.Name;
+                    LogContext.PushProperty("user_name", username);
+                }
+                else
+                {
+                    LogContext.PushProperty("user_name", null);
+                }
                 await next();
             });
 
